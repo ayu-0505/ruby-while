@@ -31,26 +31,8 @@ jobs:
         with:
           node-version: '22'
 
-      # - name: Setup Application
-      #   run: composer setup
-
-      - name: Install PHP dependencies
-        run: composer install
-
-      - name: Setup Laravel
-        run: |
-          cp .env.example .env
-          php artisan key:generate
-          php artisan migrate --force
-
-      - name: Install Node dependencies
-        run: npm install
-
-      - name: Debug Wayfinder
-        run: php artisan wayfinder:generate --with-form -vvv
-
-      - name: Build frontend
-        run: npm run build
+      - name: Setup Application
+        run: composer setup
 
       - name: Run CI Checks
         run: composer ci:check
