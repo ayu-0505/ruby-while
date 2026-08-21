@@ -20,3 +20,18 @@ DB_CONNECTION=sqlite
 - これらはPHP標準ではなく、Laravelの設定・環境変数の仕組み。
 
 Railsの`config/database.yml`が担う役割は、Laravelでは主に`.env`と`config/database.php`に分かれている。通常、使用するDBや接続先は`.env`で環境ごとに変更し、接続設定の構造は`config/database.php`で管理する。
+
+# questionsテーブルのMigration
+
+- `questions`テーブルに、問題が属する試験を示す`exam_id`、問題文の`body`、解説の`explanation`を定義した。
+- `foreignId('exam_id')->constrained()`は、`exam_id`を外部キーとして`exams.id`へ関連付けるLaravelのSchema Builderの機能。
+- `cascadeOnDelete()`により、親の試験を削除したときは、その試験に属する問題も削除される。
+- 問題文と解説は長文を扱うため、`string`ではなく`text`型を使用した。
+- Rails Migrationの`references :exam, foreign_key: true`に相当する処理を、Laravelでは`foreignId()->constrained()`で記述できる。
+
+# ExamとQuestionのリレーション
+
+- `Exam::questions()`に`hasMany(Question::class)`を定義し、1つの試験が複数の問題を持つ関係を表した。
+- `Question::exam()`に`belongsTo(Exam::class)`を定義し、1つの問題が1つの試験に属する関係を表した。
+- Eloquentはメソッド名とモデル名から、`questions.exam_id`を外部キーとして自動的に使用する。
+- LaravelではRailsの`has_many :questions`や`belongs_to :exam`のようなクラスマクロではなく、リレーションオブジェクトを返すPHPのメソッドとして関連を定義する。
