@@ -35,3 +35,15 @@ Railsの`config/database.yml`が担う役割は、Laravelでは主に`.env`と`c
 - `Question::exam()`に`belongsTo(Exam::class)`を定義し、1つの問題が1つの試験に属する関係を表した。
 - Eloquentはメソッド名とモデル名から、`questions.exam_id`を外部キーとして自動的に使用する。
 - LaravelではRailsの`has_many :questions`や`belongs_to :exam`のようなクラスマクロではなく、リレーションオブジェクトを返すPHPのメソッドとして関連を定義する。
+
+# choicesテーブルのMigration
+
+- `choices`テーブルに、選択肢が属する問題を示す`question_id`、選択肢の内容を表す`body`、正解かどうかを表す`is_correct`を定義した。
+- `boolean('is_correct')`は真偽値を保存するカラムを定義するLaravelのSchema Builderの機能。
+- `foreignId('question_id')->constrained()->cascadeOnDelete()`により、`questions.id`への外部キーを設定し、問題を削除したときに所属する選択肢も削除する。
+
+# QuestionとChoiceのリレーション
+
+- `Question::choices()`に`hasMany(Choice::class)`、`Choice::question()`に`belongsTo(Question::class)`を定義した。
+- PHPの戻り値型として`HasMany`と`BelongsTo`を宣言し、実際の関連付けはLaravelのEloquentが提供するメソッドで行う。
+- Railsの`has_many :choices` / `belongs_to :question`に対応するが、Laravelでは関連をPHPメソッドとして記述する。
